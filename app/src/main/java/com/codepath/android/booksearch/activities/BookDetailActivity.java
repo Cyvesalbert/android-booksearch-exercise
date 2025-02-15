@@ -1,18 +1,26 @@
 package com.codepath.android.booksearch.activities;
 
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.codepath.android.booksearch.R;
+import com.codepath.android.booksearch.models.Book;
 
 public class BookDetailActivity extends AppCompatActivity {
     private ImageView ivBookCover;
     private TextView tvTitle;
     private TextView tvAuthor;
+    Book book;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +32,15 @@ public class BookDetailActivity extends AppCompatActivity {
         tvTitle = (TextView) findViewById(R.id.tvTitle);
         tvAuthor = (TextView) findViewById(R.id.tvAuthor);
 
-        // Extract book object from intent extras
+        // Retrieve Parcelable object
+        Book book = getIntent().getParcelableExtra("book");
+
+        tvTitle.setText(book.getTitle());
+        tvAuthor.setText(book.getAuthor());
+        Glide.with(this)
+                .load(Uri.parse(book.getCoverUrl()))
+                .apply(RequestOptions.placeholderOf(R.drawable.ic_nocover))
+                .into(ivBookCover);
 
         // Checkpoint #5
         // Reuse the Toolbar previously used in the detailed activity by referring to this guide

@@ -1,5 +1,8 @@
 package com.codepath.android.booksearch.activities;
 
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Movie;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -48,17 +51,36 @@ public class BookListActivity extends AppCompatActivity {
         bookAdapter.setOnItemClickListener(new BookAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View itemView, int position) {
-                Toast.makeText(
-                        BookListActivity.this,
-                        "An item at position " + position + " clicked!",
-                        Toast.LENGTH_SHORT).show();
+                Log.d("MovieAdapter", "OnBindViewHolder" + position);
+                // get the movie at the passed in position
+                Book book = abooks.get(position);
 
                 // Handle item click here:
+
                 // Checkpoint #5
                 // Hook up Book Detail View
                 // see https://guides.codepath.org/android/Using-the-RecyclerView#attaching-click-handlers-using-listeners for setting up click listeners
 
                 // Create Intent to start BookDetailActivity
+                if (abooks.get(position) != null) {
+                    Log.d("bookClick", "Clicked on book: " + abooks.get(position).getAuthor());
+                    Log.d("bookClick", "Attempting to pass book data...");
+
+                    try {
+                        Intent i = new Intent(BookListActivity.this, BookDetailActivity.class);
+                        i.putExtra("book", book);
+//                        i.putExtra("author", abooks.get(position).getAuthor()); // Wrap object
+//                        i.putExtra("title", abooks.get(position).getTitle());
+//                        //i.putExtra("coverUrl", abooks.get(position).getCoverUrl());
+
+                        Log.d("bookClick", "pass book data successfully, starting activity...");
+                        startActivity(i);
+                    } catch (Exception e) {
+                        Log.e("bookClick", "Error passing book: " + e.getMessage(), e);
+                    }
+                } else {
+                    Log.e("bookClick", "book data is NULL before passing!");
+                }
                 // Get Book at the given position
                 // Pass the book into details activity using extras
                 // see http://guides.codepath.org/android/Using-Intents-to-Create-Flows

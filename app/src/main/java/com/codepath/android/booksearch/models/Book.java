@@ -1,5 +1,7 @@
 package com.codepath.android.booksearch.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.TextUtils;
 
 import org.json.JSONArray;
@@ -8,10 +10,32 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class Book {
+public class Book implements Parcelable {
     private String openLibraryId;
     private String author;
     private String title;
+
+    public Book() {
+    }
+
+    // Parcelable Constructor
+    protected Book(Parcel in) {
+        openLibraryId = in.readString();
+        title = in.readString();
+        author = in.readString();
+    }
+
+    public static final Creator<Book> CREATOR = new Creator<Book>() {
+        @Override
+        public Book createFromParcel(Parcel in) {
+            return new Book(in);
+        }
+
+        @Override
+        public Book[] newArray(int size) {
+            return new Book[size];
+        }
+    };
 
     public String getOpenLibraryId() {
         return openLibraryId;
@@ -27,7 +51,12 @@ public class Book {
 
     // Get book cover from covers API
     public String getCoverUrl() {
-        return "https://covers.openlibrary.org/b/olid/" + openLibraryId + "-L.jpg?default=false";
+        if(openLibraryId == null) {
+            return "https://covers.openlibrary.org/b/olid/" + "OL7357213M" + "-L.jpg?default=false";
+        }else{
+            return "https://covers.openlibrary.org/b/olid/" + openLibraryId + "-L.jpg?default=false";
+        }
+
     }
 
     // Returns a Book given the expected JSON
@@ -42,7 +71,7 @@ public class Book {
                 final JSONArray ids = jsonObject.getJSONArray("edition_key");
                 book.openLibraryId = ids.getString(0);
             }
-            book.title = jsonObject.has("title_suggest") ? jsonObject.getString("title_suggest") : "";
+            book.title = jsonObject.has("title") ? jsonObject.getString("title") : "";
             book.author = getAuthor(jsonObject);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -86,5 +115,21 @@ public class Book {
             }
         }
         return books;
+    }
+
+    public String toString() {
+        return "Title: " + title + ", Author: " + author;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(openLibraryId);
+        parcel.writeString(title);
+        parcel.writeString(author);
     }
 }
